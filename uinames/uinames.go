@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/pkg/errors"
 	"github.com/swayne275/joke-web-server/simplehttpget"
 )
 
@@ -44,8 +43,8 @@ func parseNames(data []byte) (string, string, error) {
 	name := fullName{}
 	if err := json.Unmarshal(data, &name); err != nil {
 		// we likely got an error message, as per the API docs
-		logErr(errors.Wrap(err, "Error unmarshalling name from API"))
-		return "", "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("error marshalling name from api: %w", err))
+		return "", "", fmt.Errorf(genericErrorMsg)
 	}
 
 	return name.FirstName, name.LastName, nil
@@ -55,8 +54,8 @@ func parseNames(data []byte) (string, string, error) {
 func GetNew(gender string) (string, string, error) {
 	body, err := simplehttpget.Get(getGenderedURL(gender))
 	if err != nil {
-		logErr(errors.Wrap(err, "uinames api get failed"))
-		return "", "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("uinames api get failed: %w", err))
+		return "", "", fmt.Errorf(genericErrorMsg)
 	}
 
 	return parseNames(body)

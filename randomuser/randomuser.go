@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/pkg/errors"
 	"github.com/swayne275/joke-web-server/simplehttpget"
 	"github.com/tidwall/gjson"
 )
@@ -38,14 +37,14 @@ func getGenderedURL(gender string) string {
 func parseNames(data []byte) (string, string, error) {
 	firstNameResult := gjson.GetBytes(data, "results.0.name.first")
 	if !firstNameResult.Exists() {
-		logErr(errors.New("no name.first given by API"))
-		return "", "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("no name.first given by API"))
+		return "", "", fmt.Errorf(genericErrorMsg)
 	}
 
 	lastNameResult := gjson.GetBytes(data, "results.0.name.last")
 	if !lastNameResult.Exists() {
-		logErr(errors.New("no name.last given by API"))
-		return "", "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("no name.last given by API"))
+		return "", "", fmt.Errorf(genericErrorMsg)
 	}
 
 	return firstNameResult.String(), lastNameResult.String(), nil
@@ -55,8 +54,8 @@ func parseNames(data []byte) (string, string, error) {
 func GetNew(gender string) (string, string, error) {
 	body, err := simplehttpget.Get(getGenderedURL(gender))
 	if err != nil {
-		logErr(errors.Wrap(err, "randomuser api get failed"))
-		return "", "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("randomuser api get failed: %w", err))
+		return "", "", fmt.Errorf(genericErrorMsg)
 	}
 
 	return parseNames(body)

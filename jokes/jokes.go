@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/swayne275/joke-web-server/simplehttpget"
 )
 
@@ -40,10 +39,10 @@ func logErr(err error) {
 // return the query url for the given first/last name. Error if name is blank
 func getNameQueryURL(first, last string) (string, error) {
 	if first == "" {
-		return "", errors.New("empty first name")
+		return "", fmt.Errorf("empty first name")
 	}
 	if last == "" {
-		return "", errors.New("empty last name")
+		return "", fmt.Errorf("empty last name")
 	}
 
 	firstEscaped := url.QueryEscape(first)
@@ -57,15 +56,15 @@ func parseJoke(data []byte) (string, error) {
 	response := response{}
 	err := json.Unmarshal(data, &response)
 	if err != nil {
-		logErr(errors.Wrap(err, "couldn't parse joke"))
-		return "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("couldn't parse joke: %w", err))
+		return "", fmt.Errorf(genericErrorMsg)
 	}
 
 	if strings.ToLower(response.ResponseType) != "success" {
 		// API doc doesn't cover what happens if !"success",
 		// so I'll assume the structure is similar enough that this won't cause problems
-		logErr(errors.New(fmt.Sprintf("unsuccessful API response: %s", response.ResponseType)))
-		return "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("unsuccessful API response: %s", response.ResponseType))
+		return "", fmt.Errorf(genericErrorMsg)
 	}
 
 	return response.ResponseValue.Joke, nil
@@ -76,14 +75,14 @@ func parseJoke(data []byte) (string, error) {
 func GetNew(first, last string) (string, error) {
 	url, err := getNameQueryURL(first, last)
 	if err != nil {
-		logErr(errors.Wrap(err, "invalid name query parameters"))
-		return "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("invalid name query parameters: %w", err))
+		return "", fmt.Errorf(genericErrorMsg)
 	}
 
 	body, err := simplehttpget.Get(url)
 	if err != nil {
-		logErr(errors.Wrap(err, "jokes api get failed"))
-		return "", errors.New(genericErrorMsg)
+		logErr(fmt.Errorf("jokes api get failed: %w", err))
+		return "", fmt.Errorf(genericErrorMsg)
 	}
 
 	return parseJoke(body)

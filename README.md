@@ -1,5 +1,5 @@
 # joke-web-server
-This is a production-ready web service that returns a random Chuck Norris joke
+This is a web service that returns a random Chuck Norris joke.
 
 # Nerdy stuff
 The server works by combining two existing web services - a Chuck Norris jokes API anda random name generator API. It uses `icndb` to get the base form of a joke, and the `randomuser.me` name generator API.
@@ -13,8 +13,7 @@ but since the app is (currently) so small it seemed like a coin toss on whether 
 
 I used the `gjson` package for more deeply nested JSON responses (from the `randomuser.me` API), and used structs to unmarshal less nested JSON.
 
-I added the ability to specify gender in the names package because some of the `icndb` jokes were inherently gendered (since they are about Chuck Norris). The `icndb` api did not detail how to specify gender. I tried adding a gender query parameter into
-`icndb` calls and it did not work. I kept the joke topic nerdy because... why not?
+I added the ability to specify gender in the names package because some of the `icndb` jokes were inherently gendered (since they are about Chuck Norris). The `icndb` api did not detail how to specify gender. I tried adding a gender query parameter into `icndb` calls and it did not work. I kept the joke topic nerdy because... why not?
 
 I chose javascript encoding so that the results would look nice via curl/Postman, as that's a common way to interact with a server. Note that `icndb` uses HTML encoding by default for easy insertion into a web page.
 

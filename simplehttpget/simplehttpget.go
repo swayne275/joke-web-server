@@ -8,8 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Get returns the server's response, or an error if the process failed
@@ -20,18 +18,17 @@ func Get(url string) ([]byte, error) {
 
 	resp, err := client.Get(url)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("get failed for url %s", url))
+		return nil, fmt.Errorf("get failed for url %q: %w", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("get failed (status code %d) for url %s",
-											resp.StatusCode, url))
+		return nil, fmt.Errorf("get failed (status code %d) for url %q", resp.StatusCode, url)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("get failed reading body for url %s", url))
+		return nil, fmt.Errorf("get failed reading body for url %q: %w", url, err)
 	}
 
 	return body, nil
