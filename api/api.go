@@ -63,6 +63,7 @@ func handleGetJoke(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// StartServer starts the webserver to deliver jokes at /
 func StartServer(port string) error {
 	// handler is run in a separate routine for each request
 	http.HandleFunc("/", handleGetJoke)
