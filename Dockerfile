@@ -1,5 +1,4 @@
 FROM golang:1.17-alpine as build-stage
-#FROM golang:alpine as build-stage
 
 RUN apk --no-cache add ca-certificates
 
